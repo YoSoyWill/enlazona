@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AlimentaciónEnLaZona</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<style>
+.w3-sidebar a {font-family: "Quicksand", sans-serif}
+body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Quicksand", sans-serif;}
+
+</style>
+</head>
+<body class="w3-content" style="max-width:1200px">
+
+
+
+<!-- Top menu on small screens -->
+  
+  <!-- Top header search bar -->
+
+  <!-- Image header -->
+  <div class="w3-display-container w3-container w3-center">
+
+    <img src="images/deleite1.jpg" alt="main" style="width:50%">
+    <div class="w3-display-topleft w3-text-white" style="padding:24px 48px">
+    </div>
+  </div>
+
+<br>
+<br>
+  <!-- Product table -->
+  <button class="w3-button w3-block w3-left-align w3-pale-red">
+    Sobre</button>
+    
+    <div id="Sobre" class="w3-container">
+      <p><b>Deleite al cuadrado</b> es la formalización de un sueño, el paso de convertir un anhelo en una realidad. Ubicados en Jericó de Desamparados, buscamos llevar sabor y dulzura a su hogar</p>
+    <p>Desde 2020, elaboramos pastelería y repostería de alta cocina a precios accesibles.</p>
+    </div>
+    <button onclick="myFunction('services')" class="w3-button w3-block w3-left-align w3-pale-red">
+    Servicios que ofrecemos</button>
+    
+    <div id="services" class="w3-container">
+      <p>Elaboramos todo tipo de pastelería y respostería, escríbenos con tu idea y nosotros la hacemos realidad</p>
+      <div class="w3-content w3-display-container">
+        <div class="w3-display-container mySlides">
+            <img src="https://deleitealcuadrado.com/images/choco1.webp" style="width:100%">
+            <div class="w3-display-middle w3-large w3-container w3-padding-16 w3-black">
+              Chocobombas
+            </div>
+          </div>
+      </div>
+      <div class="w3-display-container mySlides">
+        <img src="https://deleitealcuadrado.com/images/queque1.webp" style="width:100%">
+        <div class="w3-display-middle w3-large w3-container w3-padding-16 w3-black">
+          Pasteles
+        </div>
+       </div>
+       <div class="w3-display-container mySlides">
+        <img src="https://deleitealcuadrado.com/images/mousse1.webp" style="width:100%">
+        <div class="w3-display-middle w3-large w3-container w3-padding-16 w3-black">
+          Postres
+        </div>
+       </div>
+
+  </div>
+
+
+    </div>
+    
+    <button onclick="myFunction('contacto')" class="w3-button w3-block w3-left-align w3-pale-red">
+    Contáctanos</button>
+    
+    <div id="contacto" class="w3-container">
+        <p><B>Estamos encantados de atenderte</B></p>
+    <p><span class="material-symbols-outlined">location_on</span>Calle Quirós, Rosario de Desamparados</p> 
+    <p><span class="material-symbols-outlined">call</span> 8888-8888</p>  
+    <p><span class="material-symbols-outlined">alternate_email</span>deleitealcuadrado@gmail.com</p>
+               <p></p> 
+    </div>
+
+
+  <!-- Footer -->
+  <footer class="w3-container w3-black w3-padding-32">
+    <h1>EnLaZona</h1>
+    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatem ad quasi maiores labore corrupti sint placeat dignissimos blanditiis odit iure doloribus excepturi sed in dolores atque, aperiam vitae, inventore consequatur?</p>
+  </footer>
+  
+
+
+  <!-- End page content -->
+</div>
+
+
+
+<script>
+
+// imagenes
+var myIndex = 0;
+carousel();
+
+function carousel() {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  myIndex++;
+  if (myIndex > x.length) {myIndex = 1}    
+  x[myIndex-1].style.display = "block";  
+  setTimeout(carousel, 2000); // Change image every 2 seconds
+}
+
+
+</script>
+
+</body>
+</html>
