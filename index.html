@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EnLaZona</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<style>
+.w3-sidebar a {font-family: "Roboto", sans-serif}
+body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
+</style>
+</head>
+<body class="w3-content" style="max-width:1200px">
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-bar-block w3-light-green w3-collapse w3-top" style="z-index:3;width:250px" id="mySidebar">
+  <div class="w3-container w3-display-container w3-padding-16">
+    <i onclick="w3_close()" class="fa fa-remove w3-hide-large w3-button w3-display-topright"></i>
+    <h3 class="w3-wide">EnLaZona</h3>
+  </div>
+  <div class="w3-padding-64 w3-large w3-text-white" style="font-weight:bold">
+    <a href="#" class="w3-bar-item w3-button">Abarrotes</a>
+    <a href="alimentacion.html" class="w3-bar-item w3-button">Alimentación</a>
+    <a href="#" class="w3-bar-item w3-button">Ferretería</a>
+    <a href="#" class="w3-bar-item w3-button">Mascotas</a>
+    <a href="#" class="w3-bar-item w3-button">Servicios </a>
+    <a href="#" class="w3-bar-item w3-button">Entretenimiento</a>
+    <a href="#" class="w3-bar-item w3-button">Reparaciones</a>
+    <a href="#" class="w3-bar-item w3-button">Otros</a>
+  </div>
+  <a href="#footer" class="w3-bar-item w3-button w3-padding">Contacto</a> 
+</nav>
+
+<!-- Top menu on small screens -->
+<header class="w3-bar w3-top w3-hide-large w3-green w3-xlarge">
+  <div class="w3-bar-item w3-padding-24 w3-wide" onclick="location.href='index.html'" style="cursor:pointer">EnLaZona</div>
+  <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-24 w3-right" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+</header>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:250px">
+
+  <!-- Push down content on small screens -->
+  <div class="w3-hide-large" style="margin-top:83px"></div>
+  
+  <!-- Top header search bar -->
+  <header class="w3-container w3-xlarge">
+    <script async src="https://cse.google.com/cse.js?cx=2750f55d053124dca">
+    </script>
+    <p><div class="gcse-search"></div>
+    </p>
+  </header>
+
+  <!-- Image header -->
+  <div class="w3-display-container w3-container">
+    <img src="images/main.jpg" alt="main" style="width:100%">
+    <div class="w3-display-topleft w3-text-white" style="padding:24px 48px">
+    </div>
+  </div>
+
+<br>
+<br>
+  <!-- Product grid -->
+  <div class="w3-row w3-grayscale">
+    <div class="w3-col l3 s6 ">
+      <div class="w3-container">
+        <img src="images/grocery.jfif" style="width:100%">
+        <p>ABARROTES</p>
+      </div>
+      <div class="w3-container" onclick="location.href='alimentacion.html'" style="cursor:pointer">
+        <img src="images/food.jfif" style="width:100%">
+        <p>ALIMENTACIÓN</p>
+      </div>
+    </div>
+    <div class="w3-col l3 s6 ">
+        <div class="w3-container">
+          <img src="images/ferre.jfif" style="width:100%">
+          <p>FERRETERÍA</p>
+        </div>
+        <div class="w3-container">
+          <img src="images/pets.jfif" style="width:100%">
+          <p>MASCOTAS</p>
+        </div>
+      </div>
+      <div class="w3-col l3 s6 ">
+        <div class="w3-container">
+          <img src="images/entertainment.jfif" style="width:100%">
+          <p>ENTRETENIMIENTO</p>
+        </div>
+        <div class="w3-container">
+          <img src="images/services.jfif" style="width:100%">
+          <p>SERVICIOS</p>
+        </div>
+      </div>
+      <div class="w3-col l3 s6 ">
+        <div class="w3-container">
+          <img src="images/mechanic.jfif" style="width:100%">
+          <p>REPARACIONES</p>
+        </div>
+        <div class="w3-container">
+          <img src="images/others.jfif" style="width:100%">
+          <p>OTROS</p>
+        </div>
+      </div>
+      
+  </div>
+
+  <!-- Footer -->
+  <footer class="w3-container w3-black w3-padding-32">
+    <h1>EnLaZona</h1>
+    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatem ad quasi maiores labore corrupti sint placeat dignissimos blanditiis odit iure doloribus excepturi sed in dolores atque, aperiam vitae, inventore consequatur?</p>
+  </footer>
+  
+
+
+  <!-- End page content -->
+</div>
+
+
+
+<script>
+// Accordion 
+function myAccFunc() {
+  var x = document.getElementById("demoAcc");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else {
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
+
+// Click on the "Jeans" link on page load to open the accordion for demo purposes
+document.getElementById("myBtn").click();
+
+
+// Open and close sidebar
+function w3_open() {
+  document.getElementById("mySidebar").style.display = "block";
+  document.getElementById("myOverlay").style.display = "block";
+}
+ 
+function w3_close() {
+  document.getElementById("mySidebar").style.display = "none";
+  document.getElementById("myOverlay").style.display = "none";
+}
+</script>
+
+</body>
+</html>
