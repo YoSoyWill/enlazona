@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>EnLaZona</title>
+<title>AlimentaciónEnLaZona</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <style>
-.w3-sidebar a {font-family: "Roboto", sans-serif}
-body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
+.w3-sidebar a {font-family: "Quicksand", sans-serif}
+body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Quicksand", sans-serif;}
+
 </style>
 </head>
 <body class="w3-content" style="max-width:1200px">
@@ -23,18 +24,21 @@ body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
   </div>
   <div class="w3-padding-64 w3-large w3-text-white" style="font-weight:bold">
     <a href="#" class="w3-bar-item w3-button">Abarrotes</a>
-    <a href="#" class="w3-bar-item w3-button">Alimentación</a>
+    <a href="alimentacion.html" class="w3-bar-item w3-button">Alimentación</a>
     <a href="#" class="w3-bar-item w3-button">Ferretería</a>
     <a href="#" class="w3-bar-item w3-button">Mascotas</a>
-    <a href="#" class="w3-bar-item w3-button">Servicios profesionales</a>
+    <a href="#" class="w3-bar-item w3-button">Servicios </a>
     <a href="#" class="w3-bar-item w3-button">Entretenimiento</a>
+    <a href="#" class="w3-bar-item w3-button">Reparaciones</a>
+    <a href="#" class="w3-bar-item w3-button">Otros</a>
   </div>
   <a href="#footer" class="w3-bar-item w3-button w3-padding">Contacto</a> 
+
 </nav>
 
 <!-- Top menu on small screens -->
 <header class="w3-bar w3-top w3-hide-large w3-green w3-xlarge">
-  <div class="w3-bar-item w3-padding-24 w3-wide">EnLaZona</div>
+  <div class="w3-bar-item w3-padding-24 w3-wide" onclick="location.href='index.html'" style="cursor:pointer">EnLaZona</div>
   <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-24 w3-right" onclick="w3_open()"><i class="fa fa-bars"></i></a>
 </header>
 
@@ -47,67 +51,60 @@ body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
   <!-- Push down content on small screens -->
   <div class="w3-hide-large" style="margin-top:83px"></div>
   
-  <!-- Top header -->
+  <!-- Top header search bar -->
   <header class="w3-container w3-xlarge">
     <script async src="https://cse.google.com/cse.js?cx=2750f55d053124dca">
     </script>
-    <div class="gcse-search"></div>
+    <p><div class="gcse-search"></div>
     </p>
   </header>
 
   <!-- Image header -->
   <div class="w3-display-container w3-container">
-    <img src="images/food.jfif" alt="main" style="width:100%">
+
+    <img src="images/mainfood.png" alt="main" style="width:100%">
     <div class="w3-display-topleft w3-text-white" style="padding:24px 48px">
     </div>
   </div>
 
 <br>
 <br>
-  <!-- Product grid -->
-  <div class="w3-row w3-grayscale">
-    <div class="w3-col l3 s6 ">
-      <div class="w3-container">
-        <img src="images/grocery/grocery1.jfif" style="width:100%">
-        <p>SUPER HOLA</p>
-      </div>
-      <div class="w3-container">
-        <img src="images/grocery/grocery1.jfif" style="width:100%">
-        <p>SUPER 365</p>
-      </div>
-    </div>
-    <div class="w3-col l3 s6 ">
-        <div class="w3-container">
-            <img src="images/grocery/grocery1.jfif" style="width:100%">
-            <p>SUPER PEPE</p>
-        </div>
-        <div class="w3-container">
-            <img src="images/grocery/grocery1.jfif" style="width:100%">
-            <p>SUPER SUPER</p>
-        </div>
-      </div>
-      <div class="w3-col l3 s6 ">
-        <div class="w3-container">
-            <img src="images/grocery/grocery1.jfif" style="width:100%">
-            <p>LA PULPE</p>
-        </div>
-        <div class="w3-container">
-            <img src="images/grocery/grocery1.jfif" style="width:100%">
-            <p>DONDE PANCHO</p>
-        </div>
-      </div>
-      <div class="w3-col l3 s6 ">
-        <div class="w3-container">
-            <img src="images/grocery/grocery1.jfif" style="width:100%">
-            <p>EL CHINO</p>
-        </div>
-        <div class="w3-container">
-          <img src="images/grocery/grocery1.jfif" style="width:100%">
-          <p>LA ESQUINA</p>
-        </div>
-      </div>
-      
-  </div>
+  <!-- Product table -->
+  <input type="text" class="w3-block" id="myInput" onkeyup="myFunction()" placeholder="Filtrar">
+
+
+  <table id="myTable" class="w3-table w3-bordered w3-hoverable">
+    <tr class="header">
+      <th style="width:25%;"></th>
+      <th style="width:45%;"></th>
+      <th style="width:30%;"></th>
+    </tr>
+    <tr onclick="location.href='alimentacion/deleitealcuadrado/Deleitealcuadrado.html'" style="cursor:pointer">
+      <td><img src="alimentacion/deleitealcuadrado/images/deleite1.jpg" style="width:100%"></td>
+      <td class=" w3-center w3-padding-32"><b>Deleite al Cuadrado</b><BR> Calle Quirós</td>
+      <td><span class="w3-center w3-padding-32 material-symbols-outlined"> local_convenience_store motorcycle credit_score </span></td>
+    </tr>
+    <tr onclick="location.href=''" style="cursor:pointer">
+      <td><img src="images/grocery.jfif" style="width:100%"></td>
+      <td class=" w3-center w3-padding-32"><b>SUPER DOS</b><BR> Jericó</td>
+      <td><span class="w3-center w3-padding-32 material-symbols-outlined">fastfood local_convenience_store motorcycle  </span></td>
+    </tr>
+    <tr onclick="location.href=''" style="cursor:pointer">
+      <td><img src="images/grocery.jfif" style="width:100%"></td>
+      <td class=" w3-center w3-padding-32"><b>SUPER TRES</b><BR> Jericó</td>
+      <td><span class="w3-center w3-padding-32 material-symbols-outlined">fastfood  motorcycle credit_score </span></td>
+    </tr>
+    <tr onclick="location.href=''" style="cursor:pointer">
+      <td><img src="images/grocery.jfif" style="width:100%"></td>
+      <td class=" w3-center w3-padding-32"><b>SUPER CUATRO</b><BR> Jericó</td>
+      <td><span class="w3-center w3-padding-32 material-symbols-outlined">fastfood local_convenience_store  credit_score </span></td>
+    </tr>
+    <tr onclick="location.href=''" style="cursor:pointer">
+      <td><img src="images/grocery.jfif" style="width:100%"></td>
+      <td class=" w3-center w3-padding-32"><b>SUPER CINCO</b><BR> Jericó</td>
+      <td><span class="w3-center w3-padding-32 material-symbols-outlined">fastfood local_convenience_store motorcycle  </span></td>
+    </tr>
+  </table>
 
   <!-- Footer -->
   <footer class="w3-container w3-black w3-padding-32">
@@ -146,6 +143,31 @@ function w3_open() {
 function w3_close() {
   document.getElementById("mySidebar").style.display = "none";
   document.getElementById("myOverlay").style.display = "none";
+}
+
+//filter
+
+
+function myFunction() {
+
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
 }
 </script>
 
