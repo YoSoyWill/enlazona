@@ -22,8 +22,15 @@
             <h1>EnLaZona</h1>
         </div>
     </header>
+    <div id="loading-screen">
+        <div class="loader-container">
+            <div class="loader"></div>
+            <p id="loading-text">Cargando contenido...</p>
+        </div>
+    </div>
 
-    <main id="contenido-principal" class="container">
+
+    <div id="contenido-principal" class="container">
 
         <section id="promo-gallery-container">
             <div id="promo-gallery"></div>
@@ -43,9 +50,9 @@
                 </div>
                 <div class="distance-slider-wrapper">
                     <label for="distance-filter">
-                        Distancia máx: <span id="distance-value">5</span> km
+                        Distancia máx: <span id="distance-value">15</span> km
                     </label>
-                    <input type="range" id="distance-filter" min="1" max="50" value="5">
+                    <input type="range" id="distance-filter" min="1" max="50" value="15">
                 </div>
             </div>
         </div>
@@ -55,14 +62,33 @@
             <p id="error-message" class="hidden"></p>
             <p id="no-results-message" class="hidden">No se encontraron lugares que coincidan con los filtros.</p>
         </div>
-    </main>
+    </div>
 
     <script>
+                // Simulación de carga y transición
+                window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const mainContent = document.getElementById('contenido-principal');
+
+            // Simula la carga durante 2 segundos
+            setTimeout(function() {
+                // Desvanece la pantalla de carga
+                loadingScreen.style.opacity = '0';
+                setTimeout(function() {
+                    loadingScreen.style.display = 'none'; // Oculta la pantalla de carga
+                    mainContent.style.display = 'block'; // Muestra el contenido principal
+                    // Desvanece el contenido principal
+                    setTimeout(function() {
+                       mainContent.style.opacity = '1';
+                    }, 10);
+                }, 500); // Espera a que termine la transición de opacidad
+            }, 1000);
+        });
         // --- ESTADO GLOBAL ---
         let allData = []; let allPromos = [];
         let userLat; let userLon;
         let filtroCategoriaSeleccionada = 'Todos';
-        let maxDistance = 5;
+        let maxDistance = 15;
         let searchTerm = '';
         let promoIntervalId = null; let currentPromoIndex = -1;
 
