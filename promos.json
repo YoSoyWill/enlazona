@@ -1,0 +1,22 @@
+[
+    {
+        "foto": "https://placehold.co/800x400/e0f2fe/0ea5e9?text=Promo+1",
+        "lik": "#detalles.html"
+    },
+    {
+        "foto": "https://placehold.co/800x400/fecdd3/be123c?text=Oferta+Especial",
+        "link": "#detalles.html"
+    },
+    {
+        "foto": "https://placehold.co/800x400/dcfce7/16a34a?text=Descuento+Verde",
+        "link": "#detalles.html"
+    },
+    {
+        "foto": "https://placehold.co/800x400/fef3c7/d97706?text=Nuevo+Local",
+        "link": "#detalles.html"
+    },
+    {
+        "foto": "https://placehold.co/800x400/e9d5ff/7e22ce?text=Evento+Próximo",
+        "link": "detalles.html"
+    }
+]

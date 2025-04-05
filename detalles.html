@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Lugar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header id="barra-superior">
+        <div class="container">
+            <a href="javascript:history.back()">
+                <span class="material-symbols-outlined">arrow_back</span> 
+            </a>
+            <h1 id="detail-title">Detalles</h1>
+            <div class="spacer"></div>
+        </div>
+    </header>
+
+    <main id="contenido-detalles" class="container">
+        <div id="detalle-lugar">
+            <p style="padding: 1.5rem; text-align: center; color: var(--color-text-lighter);">Cargando detalles...</p>
+        </div>
+        <p id="detail-error-message" class="hidden">Mensaje de error aquí.</p>
+    </main>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const detalleLugarDiv = document.getElementById('detalle-lugar');
+            const errorMessageDiv = document.getElementById('detail-error-message');
+            const titleElement = document.getElementById('detail-title');
+
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const name = params.get('name') || 'Nombre no disponible';
+                const categoria = params.get('categoria') || 'Categoría no disponible';
+                const descripcion = params.get('descripcion') || 'Descripción no disponible.';
+                const descripcion2 = params.get('descripcion2') || 'Descripción completa no disponible.';
+                const imagen = params.get('imagen');
+                const direccion = params.get('direccion');
+                const latitud = params.get('latitud');
+                const longitud = params.get('longitud');
+                const contacto = params.get('contacto') || '';
+
+                const etiquetas = params.get('etiquetas')
+                    ? params.get('etiquetas').split(',').map(tag => tag.trim()).filter(tag => tag)
+                    : [];
+
+                document.title = `Detalles: ${name}`;
+                titleElement.textContent = name;
+
+                let detallesHTML = '';
+
+                if (imagen) {
+                    const placeholderImg = `https://placehold.co/600x300/cccccc/ffffff?text=Imagen+no+disponible`;
+                    detallesHTML += `<img src="${imagen}" alt="${name}" onerror="this.onerror=null; this.src='${placeholderImg}';">`;
+                }
+
+                detallesHTML += `<div class="details-content">`;
+                detallesHTML += `<h2>${name}</h2>`;
+                detallesHTML += `<p class="category">${categoria}</p>`;
+                detallesHTML += `<p class="description">${descripcion}</p>`;
+                detallesHTML += `<p class="description">${descripcion2}</p>`;
+
+
+                if (contacto) {
+                    detallesHTML += `<div class="details-section">`;
+                    detallesHTML += `<h3>Contacto</h3>`;
+                    if (contacto.toLowerCase().includes('tel:') || /^\d{4}-?\d{4}$/.test(contacto.trim())) {
+                        const telNumero = contacto.replace(/\D/g,'');
+                        detallesHTML += `<p><a href="tel:${telNumero}">${contacto}</a></p>`;
+                    } else {
+                        detallesHTML += `<p>${contacto}</p>`;
+                    }
+                    detallesHTML += `</div>`;
+                }
+
+                if ((latitud && longitud) ) {
+                    detallesHTML += `<div class="details-section">`;
+                    detallesHTML += `<h3>Ubicación y Navegación</h3>`;
+                    detallesHTML += `<p class="description">${direccion}</p>`;
+                    detallesHTML += `<div class="button-container">`;
+
+                    const mapsUrl =  (latitud && longitud ? `https://www.google.com/maps/search/?api=1&query=${latitud},${longitud}` : '');
+                    if (mapsUrl) {
+                        detallesHTML += `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="detail-button">
+                                            <span class="material-symbols-outlined">location_on</span> Google Maps
+                                        </a>`;
+                    }
+
+                    const wazeUrl =  (latitud && longitud ? `https://waze.com/ul?ll=${latitud},${longitud}&navigate=yes` : '');
+                    if (wazeUrl) {
+                        detallesHTML += `<a href="${wazeUrl}" target="_blank" rel="noopener noreferrer" class="detail-button waze-button">
+                                            <span class="material-symbols-outlined">navigation</span> Waze
+                                        </a>`;
+                    }
+                    detallesHTML += `</div>`;
+                    detallesHTML += `</div>`;
+                }
+
+                if (etiquetas.length > 0) {
+                    detallesHTML += `<div class="details-section">`;
+                    detallesHTML += `<h3>Etiquetas</h3>`;
+                    detallesHTML += `<div class="tag-container">`;
+                    etiquetas.forEach(tag => {
+                        detallesHTML += `<span class="tag">${tag}</span>`;
+                    });
+                    detallesHTML += `</div>`;
+                    detallesHTML += `</div>`;
+                }
+
+                detallesHTML += `</div>`;
+
+                detalleLugarDiv.innerHTML = detallesHTML;
+
+            } catch (error) {
+                console.error("Error al mostrar detalles:", error);
+                detalleLugarDiv.innerHTML = `<p style="padding: 1.5rem; text-align: center; color: var(--color-error);">Error al cargar los detalles del lugar.</p>`;
+                errorMessageDiv.textContent = `Ocurrió un error: ${error.message}`;
+                errorMessageDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

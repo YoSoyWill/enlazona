@@ -1,155 +1,380 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
+
 <head>
-<title>EnLaZona</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-<style>
-.w3-sidebar a {font-family: "Roboto", sans-serif}
-body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro por Distancia</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+
 </head>
-<body class="w3-content" style="max-width:1200px">
 
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-bar-block w3-light-green w3-collapse w3-top" style="z-index:3;width:250px" id="mySidebar">
-  <div class="w3-container w3-display-container w3-padding-16">
-    <i onclick="w3_close()" class="fa fa-remove w3-hide-large w3-button w3-display-topright"></i>
-    <h3 class="w3-wide">EnLaZona</h3>
-  </div>
-  <div class="w3-padding-64 w3-large w3-text-white" style="font-weight:bold">
-    <a href="#" class="w3-bar-item w3-button">Abarrotes</a>
-    <a href="alimentacion.html" class="w3-bar-item w3-button">Alimentación</a>
-    <a href="#" class="w3-bar-item w3-button">Ferretería</a>
-    <a href="#" class="w3-bar-item w3-button">Mascotas</a>
-    <a href="#" class="w3-bar-item w3-button">Servicios </a>
-    <a href="#" class="w3-bar-item w3-button">Entretenimiento</a>
-    <a href="#" class="w3-bar-item w3-button">Reparaciones</a>
-    <a href="#" class="w3-bar-item w3-button">Otros</a>
-  </div>
-  <a href="#footer" class="w3-bar-item w3-button w3-padding">Contacto</a> 
-</nav>
+<body>
+    <header id="barra-superior">
+        <div class="container">
+            <h1>EnLaZona</h1>
+        </div>
+    </header>
 
-<!-- Top menu on small screens -->
-<header class="w3-bar w3-top w3-hide-large w3-green w3-xlarge">
-  <div class="w3-bar-item w3-padding-24 w3-wide" onclick="location.href='index.html'" style="cursor:pointer">EnLaZona</div>
-  <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-24 w3-right" onclick="w3_open()"><i class="fa fa-bars"></i></a>
-</header>
+    <main id="contenido-principal" class="container">
 
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+        <section id="promo-gallery-container">
+            <div id="promo-gallery"></div>
+            <p id="loading-promos">Cargando promociones...</p>
+        </section>
 
-<!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:250px">
+        <div id="filtros-container">
+            <div class="filter-bar">
+                <div class="search-wrapper">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" id="buscador-input" placeholder="Buscar por nombre o etiqueta...">
+                </div>
+                <div class="category-select-wrapper">
+                    <select id="categorias-select">
+                        <option value="Todos">Cargando...</option>
+                    </select>
+                </div>
+                <div class="distance-slider-wrapper">
+                    <label for="distance-filter">
+                        Distancia máx: <span id="distance-value">5</span> km
+                    </label>
+                    <input type="range" id="distance-filter" min="1" max="50" value="5">
+                </div>
+            </div>
+        </div>
 
-  <!-- Push down content on small screens -->
-  <div class="w3-hide-large" style="margin-top:83px"></div>
-  
-  <!-- Top header search bar -->
-  <header class="w3-container w3-xlarge">
-    <script async src="https://cse.google.com/cse.js?cx=2750f55d053124dca">
+        <div id="data-list">
+            <p id="loading-message">Cargando datos de lugares...</p>
+            <p id="error-message" class="hidden"></p>
+            <p id="no-results-message" class="hidden">No se encontraron lugares que coincidan con los filtros.</p>
+        </div>
+    </main>
+
+    <script>
+        // --- ESTADO GLOBAL ---
+        let allData = []; let allPromos = [];
+        let userLat; let userLon;
+        let filtroCategoriaSeleccionada = 'Todos';
+        let maxDistance = 5;
+        let searchTerm = '';
+        let promoIntervalId = null; let currentPromoIndex = -1;
+
+        // --- ELEMENTOS DOM ---
+        const distanceFilter = document.getElementById('distance-filter');
+        const distanceValueSpan = document.getElementById('distance-value');
+        const filtroCategoriasSelect = document.getElementById('categorias-select');
+        const buscadorInput = document.getElementById('buscador-input');
+        const dataListDiv = document.getElementById('data-list');
+        const loadingMessage = document.getElementById('loading-message');
+        const errorMessage = document.getElementById('error-message');
+        const noResultsMessage = document.getElementById('no-results-message');
+        const promoGalleryDiv = document.getElementById('promo-gallery');
+        const loadingPromos = document.getElementById('loading-promos');
+
+        // --- INICIALIZACIÓN ASÍNCRONA ---
+        async function init() {
+            setupEventListeners();
+            try {
+                // Asumiendo que data.json y promos.json están en la misma carpeta
+                const [dataResponse, promosResponse] = await Promise.all([
+                    fetch('data.json'),
+                    fetch('promos.json')
+                ]);
+
+                if (!dataResponse.ok) throw new Error(`Error al cargar data.json: ${dataResponse.statusText} (${dataResponse.status})`);
+                if (!promosResponse.ok) throw new Error(`Error al cargar promos.json: ${promosResponse.statusText} (${promosResponse.status})`);
+
+                allData = await dataResponse.json();
+                allPromos = await promosResponse.json();
+                console.log("Datos cargados:", allData.length, "lugares,", allPromos.length, "promos.");
+
+                populateCategoryFilter();
+                startPromoGallery();
+                getUserLocation(); // Intentará obtener ubicación y luego llamará a filterAndDisplay
+
+            } catch (error) {
+                console.error("Error al cargar datos iniciales:", error);
+                showError(`No se pudieron cargar los datos necesarios: ${error.message}. Intenta recargar.`);
+                loadingMessage.classList.add('hidden');
+                loadingPromos.classList.add('hidden');
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        function setupEventListeners() {
+            distanceFilter.addEventListener('input', function () {
+                maxDistance = parseInt(this.value);
+                distanceValueSpan.textContent = maxDistance;
+                filterAndDisplay();
+            });
+            filtroCategoriasSelect.addEventListener('change', () => {
+                filtroCategoriaSeleccionada = filtroCategoriasSelect.value;
+                filterAndDisplay();
+            });
+            let debounceTimer;
+            buscadorInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    searchTerm = buscadorInput.value.toLowerCase().trim();
+                    filterAndDisplay();
+                }, 300); // Espera 300ms después de dejar de escribir
+            });
+        }
+
+        // --- GALERÍA DE PROMOCIONES ---
+        function startPromoGallery() {
+            if (allPromos && allPromos.length > 0) {
+                loadingPromos.classList.add('hidden');
+                showNextPromo(); // Muestra la primera promo inmediatamente
+                if (promoIntervalId) clearInterval(promoIntervalId); // Limpia intervalo anterior si existe
+                promoIntervalId = setInterval(showNextPromo, 5000); // Cambia cada 5 segundos
+            } else {
+                loadingPromos.textContent = 'No hay promociones disponibles.';
+                // Opcional: ocultar el contenedor si no hay promos
+                // document.getElementById('promo-gallery-container').classList.add('hidden');
+            }
+        }
+
+        function showNextPromo() {
+            if (!allPromos || allPromos.length === 0) return;
+
+            // Elige un índice aleatorio diferente al actual (si hay más de 1 promo)
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * allPromos.length);
+            } while (allPromos.length > 1 && randomIndex === currentPromoIndex);
+            currentPromoIndex = randomIndex;
+
+            const promo = allPromos[currentPromoIndex];
+
+            // Crea el nuevo elemento de promo
+            const promoLink = document.createElement('a');
+            promoLink.href = promo.link || '#'; // Enlace de la promo o # si no hay
+            promoLink.target = "_blank"; // Abrir en nueva pestaña
+            promoLink.rel = "noopener noreferrer";
+            // Aplica la clase base y 'hidden' inicialmente
+            promoLink.className = 'promo-item hidden';
+            const placeholderPromoImg = `https://placehold.co/800x400/dddddd/aaaaaa?text=Promo`;
+            promoLink.innerHTML = `<img src="${promo.foto}" alt="Promoción ${promo.name || ''}" onerror="this.onerror=null; this.src='${placeholderPromoImg}';">`; // Imagen con fallback
+
+            // Elimina el item visible anterior (si existe) después de la transición
+            const currentVisibleItem = promoGalleryDiv.querySelector('.promo-item.visible');
+            if (currentVisibleItem) {
+                currentVisibleItem.classList.remove('visible'); // Inicia la transición de salida
+                // currentVisibleItem.classList.add('hidden'); // Opcional: añadir hidden aquí si se prefiere
+                // Espera a que termine la transición de opacidad para eliminarlo
+                setTimeout(() => {
+                    if (currentVisibleItem.parentNode === promoGalleryDiv) {
+                        promoGalleryDiv.removeChild(currentVisibleItem);
+                    }
+                }, 500); // 500ms coincide con la duración de la transición
+            }
+
+            // Añade el nuevo item al DOM
+            promoGalleryDiv.appendChild(promoLink);
+
+            // Fuerza un reflow para asegurar que la transición se aplique
+            // void promoLink.offsetWidth; // Truco de reflow (a veces necesario)
+
+            // Inicia la transición de entrada después de un pequeño delay
+            setTimeout(() => {
+                promoLink.classList.add('visible');
+                // promoLink.classList.remove('hidden'); // Quitar hidden si se añadió arriba
+            }, 50); // Pequeño delay para permitir que el elemento se renderice como hidden primero
+        }
+
+
+        // --- FILTRO CATEGORÍAS ---
+        function populateCategoryFilter() {
+            // Extrae categorías únicas, asegurándose de que no haya undefined o null
+            const categorias = ['Todos', ...new Set(allData.map(item => item.categoria).filter(Boolean))];
+            filtroCategoriasSelect.innerHTML = ''; // Limpia opciones existentes
+            categorias.forEach(categoria => {
+                const option = document.createElement('option');
+                option.value = categoria;
+                option.textContent = categoria;
+                filtroCategoriasSelect.appendChild(option);
+            });
+        }
+
+        // --- GEOLOCALIZACIÓN ---
+        function getUserLocation() {
+            if (navigator.geolocation && navigator.geolocation.getCurrentPosition) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        userLat = position.coords.latitude;
+                        userLon = position.coords.longitude;
+                        console.log(`Ubicación obtenida: ${userLat}, ${userLon}`);
+                        filterAndDisplay(); // Ahora filtra con la ubicación
+                    },
+                    error => {
+                        console.warn('Advertencia de ubicación:', error.message);
+                        // Decide qué hacer si no se obtiene ubicación: mostrar error o solo filtrar sin distancia
+                        // Opción 1: Mostrar error y filtrar sin distancia
+                        showError(`No se pudo obtener tu ubicación (${error.message}). Mostrando lugares sin filtro de distancia.`);
+                        // Opción 2: Solo mostrar mensaje en consola y filtrar sin distancia
+                        // console.log("Filtrando sin ubicación.");
+                        userLat = undefined; // Asegura que no se filtre por distancia
+                        userLon = undefined;
+                        filterAndDisplay(); // Filtra sin datos de ubicación
+                    },
+                    {
+                        enableHighAccuracy: false, // Más rápido, menos consumo
+                        timeout: 8000, // Tiempo máximo para obtenerla (8s)
+                        maximumAge: 60000 // Reutilizar ubicación si tiene menos de 1 minuto
+                    }
+                );
+            } else {
+                console.log('La geolocalización no es compatible en este navegador.');
+                showError('La geolocalización no es compatible. Mostrando lugares sin filtro de distancia.');
+                userLat = undefined;
+                userLon = undefined;
+                filterAndDisplay(); // Filtra sin datos de ubicación
+            }
+        }
+
+        // --- CÁLCULO DISTANCIA (Haversine) ---
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            // Si no hay ubicación del usuario o del lugar, retorna Infinito
+            if (userLat === undefined || userLon === undefined || lat2 === undefined || lon2 === undefined || lat2 === null || lon2 === null) {
+                return Infinity;
+            }
+            const R = 6371; // Radio de la Tierra en km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // Distancia en km
+        }
+        function deg2rad(deg) { return deg * (Math.PI / 180); }
+
+        // --- FILTRADO Y VISUALIZACIÓN ---
+        function filterAndDisplay() {
+            if (!allData) {
+                console.log("Datos aún no cargados.");
+                return; // Espera a que los datos estén listos
+            }
+            hideMessages(); // Oculta mensajes de error/no resultados previos
+
+            const filteredData = allData.filter(item => {
+                const distancia = calculateDistance(userLat, userLon, item.latitud, item.longitud);
+                // Condición de distancia: se cumple si no hay ubicación o si está dentro del rango
+                const distanciaCumple = (userLat === undefined) || (distancia <= maxDistance);
+                // Condición de categoría
+                const categoriaCoincide = (filtroCategoriaSeleccionada === 'Todos') || (item.categoria === filtroCategoriaSeleccionada);
+                // Condición de búsqueda (nombre o etiquetas)
+                const busquedaCoincide = (searchTerm === '') ||
+                    (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+                    (item.etiquetas && Array.isArray(item.etiquetas) && item.etiquetas.some(et => et.toLowerCase().includes(searchTerm)));
+
+                return distanciaCumple && categoriaCoincide && busquedaCoincide;
+            });
+
+            // Ordenar por distancia si tenemos la ubicación del usuario
+            if (userLat !== undefined && userLon !== undefined) {
+                filteredData.sort((a, b) =>
+                    calculateDistance(userLat, userLon, a.latitud, a.longitud) -
+                    calculateDistance(userLat, userLon, b.latitud, b.longitud)
+                );
+            }
+
+            renderData(filteredData); // Muestra los datos filtrados y ordenados
+        }
+
+        // --- RENDERIZADO DATOS ---
+        function renderData(items) {
+            dataListDiv.innerHTML = ''; // Limpia el contenedor
+            loadingMessage.classList.add('hidden'); // Oculta mensaje de carga
+
+            if (items.length > 0) {
+                items.forEach((item, index) => {
+                    const itemDiv = document.createElement('div');
+                    // Aplica la clase base de la tarjeta y la animación con delay
+                    itemDiv.className = 'data-card'; // Estilos base de la tarjeta desde CSS
+                    itemDiv.style.animationDelay = `${index * 0.06}s`; // Delay escalonado
+
+                    const distanciaKm = calculateDistance(userLat, userLon, item.latitud, item.longitud);
+                    // Muestra distancia solo si es finita (se pudo calcular)
+                    const distanciaTexto = isFinite(distanciaKm) ? ` (~${distanciaKm.toFixed(1)} km)` : '';
+                    const placeholderImg = `https://placehold.co/300x200/eeeeee/cccccc?text=Imagen+no+disponible`;
+
+                    // Genera HTML interno usando clases semánticas
+                    itemDiv.innerHTML = `
+                        <img src="${item.imagen || placeholderImg}" alt="${item.name || 'Lugar'}" class="card-image" onerror="this.onerror=null; this.src='${placeholderImg}';">
+                        <div class="card-content">
+                            <h3 class="card-title">${item.name || 'Nombre no disponible'}</h3>
+                            <p class="card-category">${item.categoria || 'Categoría no disponible'}<span class="card-distance">${distanciaTexto}</span></p>
+                            <p class="card-description">${item.descripcion || 'Descripción no disponible.'}</p>
+                            ${item.etiquetas && Array.isArray(item.etiquetas) && item.etiquetas.length > 0
+                            ? `<div class="card-tags">${item.etiquetas.map(tag => `<span class="card-tag">${tag}</span>`).join('')}</div>`
+                            : ''
+                        }
+                        </div>
+                    `;
+
+                    // Event listener para navegar a detalles.html
+                    itemDiv.addEventListener('click', () => {
+                        const params = new URLSearchParams();
+                        // Añadir todos los datos relevantes como parámetros
+                        for (const key in item) {
+                            if (Object.hasOwnProperty.call(item, key) && item[key] !== undefined && item[key] !== null) {
+                                // Convierte arrays (como etiquetas) a string separado por comas
+                                const value = Array.isArray(item[key]) ? item[key].join(',') : item[key];
+                                params.append(key, value);
+                            }
+                        }
+                        // Asegurarse que las coordenadas siempre existan aunque sean vacías
+                        if (!params.has('latitud')) params.append('latitud', '');
+                        if (!params.has('longitud')) params.append('longitud', '');
+
+                        const urlDestino = `detalles.html?${params.toString()}`;
+                        console.log("Navegando a:", urlDestino);
+                        window.location.href = urlDestino;
+                    });
+
+                    dataListDiv.appendChild(itemDiv); // Añade la tarjeta al grid
+                });
+            } else {
+                // Muestra mensaje de no resultados solo si la carga inicial fue exitosa
+                if (allData && allData.length > 0) {
+                    showNoResults();
+                }
+                // Si allData está vacío, el mensaje de error de carga ya se mostró
+            }
+        }
+
+        // --- MENSAJES ---
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            loadingMessage.classList.add('hidden');
+            noResultsMessage.classList.add('hidden');
+            loadingPromos.classList.add('hidden'); // Ocultar carga de promos también
+        }
+        function showNoResults() {
+            noResultsMessage.classList.remove('hidden');
+            loadingMessage.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+        }
+        function hideMessages() {
+            errorMessage.classList.add('hidden');
+            noResultsMessage.classList.add('hidden');
+            // No ocultar loadingMessage aquí, se oculta en renderData
+        }
+
+        // --- INICIAR ---
+        document.addEventListener('DOMContentLoaded', init);
     </script>
-    <p><div class="gcse-search"></div>
-    </p>
-  </header>
-
-  <!-- Image header -->
-  <div class="w3-display-container w3-container">
-    <img src="images/main.jpg" alt="main" style="width:100%">
-    <div class="w3-display-topleft w3-text-white" style="padding:24px 48px">
-    </div>
-  </div>
-
-<br>
-<br>
-  <!-- Product grid -->
-  <div class="w3-row w3-grayscale">
-    <div class="w3-col l3 s6 ">
-      <div class="w3-container">
-        <img src="images/grocery.jfif" style="width:100%">
-        <p>ABARROTES</p>
-      </div>
-      <div class="w3-container" onclick="location.href='alimentacion.html'" style="cursor:pointer">
-        <img src="images/food.jfif" style="width:100%">
-        <p>ALIMENTACIÓN</p>
-      </div>
-    </div>
-    <div class="w3-col l3 s6 ">
-        <div class="w3-container">
-          <img src="images/ferre.jfif" style="width:100%">
-          <p>FERRETERÍA</p>
-        </div>
-        <div class="w3-container">
-          <img src="images/pets.jfif" style="width:100%">
-          <p>MASCOTAS</p>
-        </div>
-      </div>
-      <div class="w3-col l3 s6 ">
-        <div class="w3-container">
-          <img src="images/entertainment.jfif" style="width:100%">
-          <p>ENTRETENIMIENTO</p>
-        </div>
-        <div class="w3-container">
-          <img src="images/services.jfif" style="width:100%">
-          <p>SERVICIOS</p>
-        </div>
-      </div>
-      <div class="w3-col l3 s6 ">
-        <div class="w3-container">
-          <img src="images/mechanic.jfif" style="width:100%">
-          <p>REPARACIONES</p>
-        </div>
-        <div class="w3-container">
-          <img src="images/others.jfif" style="width:100%">
-          <p>OTROS</p>
-        </div>
-      </div>
-      
-  </div>
-
-  <!-- Footer -->
-  <footer class="w3-container w3-black w3-padding-32">
-    <h1>EnLaZona</h1>
-    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatem ad quasi maiores labore corrupti sint placeat dignissimos blanditiis odit iure doloribus excepturi sed in dolores atque, aperiam vitae, inventore consequatur?</p>
-  </footer>
-  
-
-
-  <!-- End page content -->
-</div>
-
-
-
-<script>
-// Accordion 
-function myAccFunc() {
-  var x = document.getElementById("demoAcc");
-  if (x.className.indexOf("w3-show") == -1) {
-    x.className += " w3-show";
-  } else {
-    x.className = x.className.replace(" w3-show", "");
-  }
-}
-
-// Click on the "Jeans" link on page load to open the accordion for demo purposes
-document.getElementById("myBtn").click();
-
-
-// Open and close sidebar
-function w3_open() {
-  document.getElementById("mySidebar").style.display = "block";
-  document.getElementById("myOverlay").style.display = "block";
-}
- 
-function w3_close() {
-  document.getElementById("mySidebar").style.display = "none";
-  document.getElementById("myOverlay").style.display = "none";
-}
-</script>
-
 </body>
+
 </html>
