@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles del Lugar</title>
+    <title>EnLaZona-Detalle</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -89,7 +89,7 @@
 
                     const mapsUrl =  (latitud && longitud ? `https://www.google.com/maps/search/?api=1&query=${latitud},${longitud}` : '');
                     if (mapsUrl) {
-                        detallesHTML += `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="detail-button">
+                        detallesHTML += `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="detail-button maps-button">
                                             <span class="material-symbols-outlined">location_on</span> Google Maps
                                         </a>`;
                     }
