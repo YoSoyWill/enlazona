@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa - EnLaZona</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        /* Estilo simple para asegurar que el body ocupe altura */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Evitar scroll general */
+        }
+        /* Ajuste para que el contenido principal tome el espacio restante */
+        #map-page-content {
+             padding-top: var(--header-height); /* Espacio para header fijo */
+             height: 100%; /* Ocupa toda la altura */
+             display: flex; /* Para que el mapa llene el espacio */
+        }
+         #map-container {
+            flex-grow: 1; /* El mapa ocupa todo el espacio disponible */
+            z-index: 5; /* Asegura que esté debajo del header */
+         }
+         /* Mejoras popup Leaflet (Opcional, se puede mover a styles.css) */
+         .leaflet-popup-content-wrapper {
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+         }
+         .leaflet-popup-content {
+             font-family: 'Inter', sans-serif;
+             color: var(--color-text-dark);
+             font-size: var(--font-size-sm);
+             line-height: 1.5;
+             max-height: 150px; /* Limitar altura del popup */
+             overflow-y: auto;  /* Scroll si el contenido es largo */
+         }
+         .leaflet-popup-content h4 { /* Título Popup */
+             font-size: var(--font-size-base);
+             font-weight: 600;
+             margin: 0 0 var(--spacing-1) 0;
+             color: var(--color-primary-dark);
+         }
+         .leaflet-popup-content p { /* Categoría/Descripción Popup */
+             margin: var(--spacing-1) 0;
+             color: var(--color-text-medium);
+             font-size: var(--font-size-xs);
+         }
+         .leaflet-popup-content a.details-link { /* Enlace a Detalles */
+             color: var(--color-primary);
+             text-decoration: none;
+             font-weight: 500;
+             font-size: var(--font-size-xs);
+             display: block;
+             margin-top: var(--spacing-2);
+         }
+         .leaflet-popup-content a.details-link:hover {
+             text-decoration: underline;
+         }
+         .leaflet-popup-tip {
+             background: var(--color-bg-card); /* Fondo de la flecha del popup */
+         }
+         /* Mensaje de carga para el mapa */
+         #map-loading {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             background-color: rgba(255, 255, 255, 0.8);
+             padding: var(--spacing-4);
+             border-radius: var(--radius-lg);
+             z-index: 1000; /* Por encima del mapa */
+             font-family: 'Inter', sans-serif;
+             color: var(--color-text-medium);
+             box-shadow: var(--shadow-lg);
+         }
+    </style>
+</head>
+
+<body>
+    <header id="barra-superior">
+        <div class="container">
+            <a href="index.html" aria-label="Volver a la lista">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <h1>Mapa - EnLaZona</h1>
+            <div class="spacer" style="width: 4rem;"></div> </div>
+    </header>
+
+    <div id="map-page-content">
+        <div id="map-container">
+            <div id="map-loading">Cargando mapa y lugares...</div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapLoadingElement = document.getElementById('map-loading');
+            let map; // Variable para guardar la instancia del mapa
+            let markerGroup; // Grupo para gestionar marcadores
+
+            // 1. Coordenadas por defecto (San José, Costa Rica) y zoom inicial
+            const defaultCoords = { lat: 9.9333, lon: -84.0833 }; // Aprox San José
+            const defaultZoom = 12;
+            let initialZoom = defaultZoom;
+            let initialCenter = [defaultCoords.lat, defaultCoords.lon];
+
+            // Función para inicializar el mapa
+            function initializeMap(centerCoords, zoomLevel) {
+                try {
+                    map = L.map('map-container').setView(centerCoords, zoomLevel);
+
+                    // Añadir capa de teselas (mapa base) - OpenStreetMap
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    // Crear un grupo para los marcadores
+                    markerGroup = L.layerGroup().addTo(map);
+
+                    // Cargar los datos de los lugares
+                    loadPlaceData();
+
+                } catch (error) {
+                    console.error("Error inicializando el mapa:", error);
+                    mapLoadingElement.textContent = 'Error al cargar el mapa.';
+                }
+            }
+
+            // Función para cargar y mostrar los lugares
+            async function loadPlaceData() {
+                try {
+                    const response = await fetch('data.json');
+                    if (!response.ok) {
+                        throw new Error(`Error al cargar data.json: ${response.statusText}`);
+                    }
+                    const places = await response.json();
+                    console.log(`Lugares cargados para el mapa: ${places.length}`);
+
+                    markerGroup.clearLayers(); // Limpiar marcadores previos si se recarga
+
+                    let markers = []; // Array para guardar marcadores y calcular bounds
+
+                    places.forEach(place => {
+                        // Asegurarse que el lugar tiene coordenadas válidas
+                        if (place.latitud != null && place.longitud != null) {
+                            const lat = parseFloat(place.latitud);
+                            const lon = parseFloat(place.longitud);
+
+                            // Validar que sean números después de parsear
+                            if (!isNaN(lat) && !isNaN(lon)) {
+                                const marker = L.marker([lat, lon]);
+
+                                // Crear contenido del Popup
+                                const params = new URLSearchParams();
+                                for (const key in place) {
+                                     if (Object.hasOwnProperty.call(place, key) && place[key] !== undefined && place[key] !== null) {
+                                         const value = Array.isArray(place[key]) ? place[key].join(',') : String(place[key]);
+                                         params.append(key, value);
+                                     }
+                                 }
+                                if (!params.has('latitud')) params.append('latitud', String(lat)); // Asegurar coords en params
+                                if (!params.has('longitud')) params.append('longitud', String(lon));
+
+                                const detailUrl = `detalles.html?${params.toString()}`;
+
+                                const popupContent = `
+                                    <h4>${place.name || 'Nombre no disponible'}</h4>
+                                    <p>${place.categoria || ''}</p>
+                                    <a href="${detailUrl}" class="details-link"">Ver detalles</a>
+                                `;
+                                marker.bindPopup(popupContent);
+
+                                markerGroup.addLayer(marker); // Añadir al grupo
+                                markers.push(marker); // Añadir al array para bounds
+                            } else {
+                                console.warn("Coordenadas inválidas para:", place.name, place.latitud, place.longitud);
+                            }
+                        } else {
+                            // console.log("Lugar sin coordenadas:", place.name); // Opcional: loguear lugares sin coords
+                        }
+                    });
+
+                    // Ajustar el zoom para mostrar todos los marcadores (si hay alguno)
+                    if (markers.length > 0) {
+                        const featureGroup = L.featureGroup(markers); // Usar featureGroup para getBounds
+                        map.fitBounds(featureGroup.getBounds().pad(0.1)); // pad añade un pequeño margen
+                    } else {
+                        console.log("No se añadieron marcadores válidos al mapa.");
+                        // Mantener vista por defecto si no hay marcadores
+                    }
+
+                    // Ocultar mensaje de carga
+                    mapLoadingElement.style.display = 'none';
+
+                } catch (error) {
+                    console.error("Error cargando o procesando datos de lugares:", error);
+                    mapLoadingElement.textContent = 'Error al cargar los lugares.';
+                }
+            }
+
+            // 2. Intentar obtener ubicación del usuario para centrar inicialmente
+            if (navigator.geolocation) {
+                console.log("Solicitando ubicación para centrar mapa...");
+                mapLoadingElement.textContent = "Obteniendo ubicación...";
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        initialCenter = [position.coords.latitude, position.coords.longitude];
+                        initialZoom = 14; // Zoom más cercano si tenemos ubicación
+                        console.log("Ubicación obtenida para centrar:", initialCenter);
+                        initializeMap(initialCenter, initialZoom);
+                        // Opcional: Añadir marcador para la ubicación del usuario
+                        L.marker(initialCenter, {
+                            // Opcional: Usar un icono diferente
+                            // icon: L.icon({ iconUrl: 'path/to/user-icon.png', ... })
+                        }).addTo(map).bindPopup("Tu ubicación aproximada").openPopup();
+                    },
+                    (error) => {
+                        console.warn("No se pudo obtener ubicación para centrar:", error.message);
+                        mapLoadingElement.textContent = "No se obtuvo ubicación, cargando mapa...";
+                        initializeMap(initialCenter, initialZoom); // Usar coords por defecto
+                    },
+                    { timeout: 5000, maximumAge: 60000, enableHighAccuracy: false } // Timeout corto para centrar
+                );
+            } else {
+                // Geolocalización no soportada
+                console.log("Geolocalización no soportada, usando centro por defecto.");
+                mapLoadingElement.textContent = "Cargando mapa...";
+                initializeMap(initialCenter, initialZoom); // Usar coords por defecto
+            }
+        });
+    </script>
+
+</body>
+</html>

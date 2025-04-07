@@ -31,7 +31,9 @@
     --color-maps: #37f18b;
     --color-maps-hover: #80ee4c;
     --color-focus-ring: var(--color-primary);
-
+    --favorite-color: #e74c3c; /* Color para el corazón de favorito */
+    --skeleton-bg: #e0e0e0;
+    --card-bg: #fff;
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -489,13 +491,21 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .card-tag {
-    font-size: var(--font-size-xs); /* Mantenemos el tamaño de fuente pequeño */
-    background-color: var(--color-tag-bg);
-    color: var(--color-tag-text);
-    /* Reducimos padding de las tags */
-    padding: var(--spacing-0_5) var(--spacing-1_5); /* Antes 0.125rem var(--spacing-2) */
-    border-radius: var(--radius-full);
     display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none; /* <-- Asegurarse que no haya borde */
+}
+.card-tag:hover, .card-tag:focus {
+    background-color: #d1d9e0;
+    outline: none;
 }
 
 /* Responsive: Revert to Vertical Layout on Small Screens */
@@ -698,4 +708,132 @@ input[type="range"]::-moz-range-thumb:hover {
 /* ================================================== */
 .hidden {
     display: none !important; /* Use important to override other display styles if needed */
+}
+.skeleton-card {
+    background-color: var(--card-bg); border-radius: 8px;
+    box-shadow: 0 2px 5px var(--shadow-color); overflow: hidden;
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+.skeleton-image { background-color: var(--skeleton-bg); width: 100%; height: 180px; }
+.skeleton-content { padding: 15px; }
+.skeleton-text { background-color: var(--skeleton-bg); height: 1.2em; margin-bottom: 8px; border-radius: 4px; }
+.skeleton-text.short { width: 60%; }
+.skeleton-text.medium { width: 80%; }
+.skeleton-tags { display: flex; gap: 5px; margin-top: 10px; }
+.skeleton-tag { background-color: var(--skeleton-bg); height: 20px; width: 50px; border-radius: 12px; }
+.favorite-icon {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 1.8em; /* Tamaño del icono */
+    color: #aaa; /* Color inicial gris */
+    cursor: pointer;
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    background: rgba(255, 255, 255, 0.7); /* Fondo semi-transparente */
+    border-radius: 50%;
+    padding: 4px; /* Espacio alrededor del icono */
+    line-height: 1; /* Asegurar que el padding funcione bien */
+    z-index: 10; /* Encima de la imagen */
+}
+.favorite-icon:hover { transform: scale(1.1); }
+.favorite-icon.favorited { color: var(--favorite-color); /* Rojo cuando es favorito */ }
+/* --- NUEVO: Filtro de Favoritos --- */
+.favorites-filter-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background-color: var(--light-gray);
+    border: 1px solid var(--medium-gray);
+    cursor: pointer;
+    margin-top: 10px; /* Espacio si el acordeón está abierto */
+    margin-bottom: 5px; /* Espacio antes de la lista */
+    width: fit-content; /* Ajustar al contenido */
+    transition: background-color 0.2s;
+}
+
+.favorites-filter-wrapper:hover {
+    background-color: #e9ecef;
+}
+
+#favoritos-filter {
+    margin-right: 8px;
+    cursor: pointer;
+    /* Estilo personalizado para el checkbox (opcional pero recomendado) */
+    accent-color: var(--primary-color); /* Colorea el checkbox */
+    width: 16px;
+    height: 16px;
+}
+
+.favorites-filter-wrapper label {
+    cursor: pointer;
+    font-size: 0.95em;
+    user-select: none; /* Evitar selección de texto al hacer clic */
+    color: var(--text-color);
+}
+
+
+/* --- NUEVO: Acordeón para Filtros --- */
+#filtros-container {
+    /* Mantener estilos existentes: margin, bg, padding, radius, shadow */
+    margin-bottom: 25px;
+    background-color: var(--card-bg);
+    padding: 0; /* Quitar padding original, se maneja en header/content */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px var(--shadow-color);
+    overflow: hidden; /* Importante para el acordeón */
+}
+
+.filtro-accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px; /* Padding original del contenedor */
+    cursor: pointer;
+    background-color: var(--card-bg); /* Asegurar fondo */
+    border: none; /* Quitar borde si es un botón */
+    width: 100%; /* Ocupar todo el ancho */
+    text-align: left; /* Alinear texto a la izquierda */
+}
+
+.filtro-accordion-header h2 {
+    margin: 0;
+    font-size: 1.1em; /* Ajustar tamaño si es necesario */
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.filtro-accordion-header .material-symbols-outlined {
+    transition: transform 0.3s ease; /* Animación del icono */
+    font-size: 1.5em; /* Tamaño del icono */
+    color: var(--dark-gray);
+}
+
+/* Rotar icono cuando el acordeón está activo/abierto */
+.filtro-accordion-header.active .material-symbols-outlined {
+    transform: rotate(180deg);
+}
+
+.filtro-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out; /* Transición suave */
+    padding: 0 15px; /* Padding lateral */
+    background-color: var(--card-bg); /* Fondo consistente */
+}
+
+/* Estilo cuando el acordeón está activo/abierto */
+.filtro-accordion-content.active {
+    /* Un valor suficientemente grande para el contenido */
+    max-height: 500px; /* Ajusta si tu contenido es más alto */
+    padding: 15px; /* Padding completo */
+    overflow: visible; /* Permitir ver sombras o elementos que sobresalgan */
+}
+
+/* Ajustar filter-bar dentro del contenido del acordeón */
+.filtro-accordion-content .filter-bar {
+    /* Los estilos de flex, gap, etc., se mantienen */
+     padding-bottom: 10px; /* Añadir espacio al final si es necesario */
 }
